@@ -1,0 +1,72 @@
+[
+  {
+    "objectID": "HW6.html",
+    "href": "HW6.html",
+    "title": "Homework6",
+    "section": "",
+    "text": "Libraries\nlibrary(tidyverse)\nlibrary(httr)\nlibrary(jsonlite)"
+  },
+  {
+    "objectID": "HW6.html#root-mean-square-error-rmse-function",
+    "href": "HW6.html#root-mean-square-error-rmse-function",
+    "title": "Homework6",
+    "section": "1. Root Mean Square Error (RMSE) Function",
+    "text": "1. Root Mean Square Error (RMSE) Function\n\nArguments: two vectors (predictions and responses), allow additional (…)\nUse mean() in the body of the function\nOutput: RMSE\n\n\ngetRMSE &lt;- function(resp, pred, ...) {\n  \n  # validation step\n  if(!(is.vector(resp) & is.vector(pred))){\n    stop('arguments must both be vectors')\n  } else if(length(resp) != length(pred)) {\n    stop('vectors must be of same length')\n  }\n  \n  # compute the squared differences\n  squared_diffs &lt;- (resp - pred)^2 \n  \n  # find the mean (with option for more arguments)\n  mean_diff &lt;- mean(squared_diffs, ...)\n  \n  # return the square root of that\n  return(sqrt(mean_diff))\n}"
+  },
+  {
+    "objectID": "HW6.html#test-the-rmse-function",
+    "href": "HW6.html#test-the-rmse-function",
+    "title": "Homework6",
+    "section": "2. Test the RMSE function",
+    "text": "2. Test the RMSE function\nPopulate values for response and prediction\n\nset.seed(10)\nn &lt;- 100\nx &lt;- runif(n)\nresp &lt;- 3 + 10 * x + rnorm(n)\npred &lt;- predict(lm(resp ~ x), data.frame(x))\n\n\nTest 1: no missing values\n\ngetRMSE(resp, pred)\n\n\n\nTest 2: missing values\nReplace 2 values in response vector with missing\n\n# arbitrarily picked 31 and 57\nresp[31] &lt;- resp[57] &lt;- NA_real_\n\nTest 2a: without specifying how to handle missing\n\ngetRMSE(resp, pred)\n\nTest 2b: exclude missing from mean\n\ngetRMSE(resp, pred, na.rm = TRUE)"
+  },
+  {
+    "objectID": "HW6.html#mean-absolute-deviation-mae-function",
+    "href": "HW6.html#mean-absolute-deviation-mae-function",
+    "title": "Homework6",
+    "section": "3. Mean Absolute Deviation (MAE) Function",
+    "text": "3. Mean Absolute Deviation (MAE) Function\n\ngetMAE &lt;- function(resp, pred, ...) {\n  \n  # validation step\n  if(!(is.vector(resp) & is.vector(pred))){\n    stop('arguments must both be vectors')\n  } else if(length(resp) != length(pred)) {\n    stop('vectors must be of same length')\n  }\n  \n  # compute the differences of absolute values\n  abs_diffs &lt;- abs(resp - pred)\n  \n  # find the mean (with option for more arguments)\n  mean_diff &lt;- mean(abs_diffs, ...)\n  \n  # return that\n  return(mean_diff)\n}"
+  },
+  {
+    "objectID": "HW6.html#test-the-mae-function",
+    "href": "HW6.html#test-the-mae-function",
+    "title": "Homework6",
+    "section": "4. Test the MAE function",
+    "text": "4. Test the MAE function\nPopulate values for response and prediction\n\nset.seed(10)\nn &lt;- 100\nx &lt;- runif(n)\nresp &lt;- 3 + 10 * x + rnorm(n)\npred &lt;- predict(lm(resp ~ x), data.frame(x))\n\n\nTest 1: no missing values\n\ngetMAE(resp, pred)\n\n\n\nTest 2: missing values\nReplace 2 values in response vector with missing\n\n# arbitrarily picked 19 and 21\nresp[19] &lt;- resp[21] &lt;- NA_real_\n\nTest 2a: without specifying how to handle missing\n\ngetMAE(resp, pred)\n\nTest 2b: exclude missing from mean\n\ngetMAE(resp, pred, na.rm = TRUE)"
+  },
+  {
+    "objectID": "HW6.html#wrapper-function",
+    "href": "HW6.html#wrapper-function",
+    "title": "Homework6",
+    "section": "5. Wrapper function",
+    "text": "5. Wrapper function\n\ntakes in 2 vectors (resp and pred)\nvalidate input (atomic vectors, numeric)\nreturn both metrics by default, include names\nmetrics to be returned can be changed by user-supplied character strings\n\n\ngetMetrics &lt;- function(resp, pred, ...) {\n  \n  # validate inputs\n  if(!(is.vector(resp) & is.vector(pred))){\n    stop('arguments must both be vectors')\n  } else if(length(resp) != length(pred)) {\n    stop('vectors must be of same length')\n  } else if (!(is.atomic(resp) & is.atomic(pred))) {\n    stop('vectors must be atomic')\n  } else if (!(is.numeric(resp) & is.numeric(pred))) {\n    stop('vectors must be numeric')\n  }\n  \n  # store all arguments, including the unnamed arguments\n  args &lt;- list(resp, pred, ...)\n  \n  # create metrics subset list (i.e. contains RMSE, MAE)\n  metrics &lt;- args[toupper(args) %in% c(\"RMSE\", \"MAE\")]\n  \n  # delete the metrics from the args list, leaving just the vectors and unnamed args\n  args &lt;- args |&gt;\n    setdiff(metrics)\n  \n  # preserve metrics as names (to apply later to the results list)\n  names(metrics) &lt;- unlist(metrics)\n  \n  # add \"get\" to the front of the metric that was passed in to make them match the function names (made uppercase)\n  metrics &lt;- map(metrics, \\(x) paste0(\"get\", toupper(x)))\n  \n  # create empty list for results\n  results &lt;- list()\n  \n  # each element in the list is now a function - use do.call to call the function by a variable\n  for (i in 1:length(metrics)) {\n    results[i] &lt;- do.call(metrics[[i]], args)\n    names(results)[i] &lt;- names(metrics)[i]\n  }\n  \n  # return results\n  return(results)\n}"
+  },
+  {
+    "objectID": "HW6.html#testing",
+    "href": "HW6.html#testing",
+    "title": "Homework6",
+    "section": "6. Testing",
+    "text": "6. Testing\nPopulate values for response and prediction\n\nset.seed(10)\nn &lt;- 100\nx &lt;- runif(n)\nresp &lt;- 3 + 10 * x + rnorm(n)\npred &lt;- predict(lm(resp ~ x), data.frame(x))\n\n\nTest 1: no missing values\nMetric: RMSE\n\ngetMetrics(resp, pred, \"rmse\")\n\nMetric: MAE\n\ngetMetrics(resp, pred, \"mae\")\n\nMetric: Both\n\ngetMetrics(resp, pred, \"RMSE\", \"MAE\")\n\n\n\nTest 2: missing values\nReplace 2 values in response vector with missing\n\n# arbitrarily picked 44 and 91\nresp[44] &lt;- resp[91] &lt;- NA_real_\n\nTest 2a: without specifying how to handle missing\n\ngetMetrics(resp, pred, \"mae\", \"rmse\")\n\nTest 2b: exclude missing from calculations\n\ngetMetrics(resp, pred, \"MAE\", \"RMSE\", na.rm = TRUE)\n\n\n\nTest 3: Invalid data\n\nbad_input &lt;- data.frame(a = 1:100)\n\ngetMetrics(bad_input, pred, \"mae\", na.rm = TRUE)"
+  },
+  {
+    "objectID": "HW6.html#query-the-news-api",
+    "href": "HW6.html#query-the-news-api",
+    "title": "Homework6",
+    "section": "Query the News API",
+    "text": "Query the News API\n\nVariables for query function: subject, from_date, api_key\nNote: values must be URL-encoded, so change spaces to %20 in subject search string\nNewsAPI documentation states that a maximum of 100 results per page are returned (100 results is also the maximum per page). As a result, have to page through the results using the page parameter in the URL\nUp to 500 total records will be returned for a single query, even if there are more pages to be pulled. Through testing, I consistently got a 426 error code from the API server after pulling 5 pages in a loop. I’m guessing it exceeds the maximum number of requests that can be filled within a short range of time\n\nFunction to query the news API\n\nquery_news_api &lt;- function(subject = \"health\", \n                           from_date = \"\", \n                           api_key = \"96a47f770685492faaf437063d733d14\") {\n  \n  # if from_date is empty string, assign yesterday's date\n  if (from_date == \"\") {\n    from_date &lt;- as.character(Sys.Date() - 1)\n  }\n  \n  # replace spaces in subject with '%20'\n  subject &lt;- gsub(\" \", \"%20\", subject)\n  \n  # helper function to construct url for 1st page\n  url &lt;- construct_url(subject, from_date, api_key, page = 1)\n  \n  # query the API\n  info &lt;- GET(url) \n\n  # raw results from JSON\n  raw_results &lt;- fromJSON(rawToChar(info$content))\n  \n  # store how many total results there are\n  total_results &lt;- raw_results |&gt;\n    pluck(\"totalResults\")\n    \n  # parse results and get to data frame\n  news_articles &lt;- raw_results |&gt;\n    pluck(\"articles\")\n  \n  # if total results are more than 100, call helper to query more pages\n  if (total_results &gt; 100) {\n    news_articles &lt;- query_more_pages(news_articles, \n                                      subject, \n                                      from_date, \n                                      api_key,\n                                      total_results)\n  }\n  \n  # return the data frame\n  return(news_articles)\n\n}\n\nhelper function to construct URL\n\nconstruct_url &lt;- function(subject, from_date, api_key, page = 1) {\n  \n  url &lt;- paste0(\"https://newsapi.org/v2/everything?q=\", subject,\n                \"&from=\", from_date,\n                \"&page=\", page,\n                \"&sortBy=popularity\",\n                \"&apiKey=\", api_key)\n\n  # print URL to console\n  print(paste0(\"Query URL: \", url))\n  \n  # return URL\n  return(url)\n  \n}\n\nhelper function to query more pages\n\nquery_more_pages &lt;- function(news_articles, subject, from_date, api_key, total_results) {\n  \n  # find how many pages need to be queried\n  total_pages &lt;- ceiling(total_results / 100)\n  \n  # total_pages can't exceed 5 (server errors above 5 requests in short succession)\n  if (total_pages &gt; 5) {\n    total_pages &lt;- 5\n  }\n  \n  # execute a loop to query each additional page and add them to the data frame\n  for (i in 2:total_pages) {\n    \n    # helper function to construct url for page number \n    url &lt;- construct_url(subject, from_date, api_key, page = i)\n  \n    # query the API\n    info &lt;- GET(url)\n    \n    # print status code to the console (testing only)\n    print(paste0(\"Status code: \", info$status_code))\n    \n    # parse results and get to data frame\n    next_page &lt;- fromJSON(rawToChar(info$content)) |&gt;\n      pluck(\"articles\")\n  \n    # add the next page to the existing data frame\n    news_articles &lt;- news_articles |&gt;\n      bind_rows(next_page)\n  }\n  \n  return(news_articles)\n}"
+  },
+  {
+    "objectID": "HW6.html#test-the-api-query-function",
+    "href": "HW6.html#test-the-api-query-function",
+    "title": "Homework6",
+    "section": "Test the API query function",
+    "text": "Test the API query function\n\nTest 1: Using defaults for the query function\n\nhealth_news &lt;- query_news_api()\n\nResult of query 1\n\nas_tibble(health_news)\n\nNote: printed as a tibble so it looks nice\nSummary for the name of the source (one-way contingency table)\n\nhealth_news |&gt; \n  pull(source) |&gt;\n  group_by(name) |&gt;\n  drop_na(name) |&gt;\n  summarize(count = n())\n\n\n\nTest 2: Specifying arguments for the query function\n\nautoimmune_news &lt;- query_news_api(\"autoimmune diseases\", \n                                  \"2024-10-01\")"
+  },
+  {
+    "objectID": "HW6.html#modifications-and-summaries-based-on-publishedat",
+    "href": "HW6.html#modifications-and-summaries-based-on-publishedat",
+    "title": "Homework6",
+    "section": "Modifications and summaries based on PublishedAt",
+    "text": "Modifications and summaries based on PublishedAt\n\nPublishedAt Modifications\n\nPublishedAt converted from char to datetime\nSort by PublishedAt datetime\nAdd new column pub_diff to show span of time between one article and the next\nSave modified data frames to new variable\n\nCreate a function to do this (since it’s being repeated for both data frames)\n\nnews_date_modifications &lt;- function(news_df) {\n  \n  # recast char column for published At as date-time\n  news_df$publishedAt &lt;- ymd_hms(news_df$publishedAt)\n  \n  # sort by published date\n  news_df &lt;- news_df |&gt;\n    arrange(publishedAt)\n  \n  # add new variable for publish difference\n  news_df &lt;- news_df |&gt;\n    mutate(pub_diff = publishedAt - lag(publishedAt))\n\n  return(news_df)\n}\n\nRun the above modifications on both data sets\nHealth news data frame\n\nhealth_news_mod &lt;- news_date_modifications(health_news)\n\nhead(health_news_mod)\n\nAutoimmune diseases news data frame\n\nautoimmune_news_mod &lt;- news_date_modifications(autoimmune_news)\n\nhead(autoimmune_news_mod)\n\n\n\nSummaries\nFind mean, sd, and median for two columns, publishedAt and pub_diff\n\nUse anonymous function within map\nHave to pass 3 functions to 2 columns\n\n\nhealth_news_mod |&gt;\n  select(publishedAt, pub_diff) |&gt;\n  map(\\(x) list(\"mean\" = mean(x, na.rm = TRUE), \n                \"sd\" = sd(x, na.rm = TRUE), \n                \"median\" = median(x, na.rm = TRUE)))"
+  }
+]
