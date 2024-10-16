@@ -1,0 +1,442 @@
+---
+title: "Homework6"
+format: html
+toc: TRUE 
+---
+
+*Libraries*
+```{r}
+library(tidyverse)
+library(httr)
+library(jsonlite)
+```
+
+
+# Task 1: Conceptual Questions
+
+(@) The purpose of the lapply() function is to apply a function to a list, and it returns a list. The equivalent function in purrr is map(). 
+(@) lapply(my_list, cor, method = "kendall")
+(@) Advantages of using purrr functions instead of the apply family in Base R
+    - The way arguments are taken in purrr functions is more consistent, e.g. in the purrr functions it seems to be that they take in data first and then the function, but in the base R functions this order varies
+    - purrr also contains helper functions like `~`, which lets you define anonymous functions in a more succinct way than in base R, where you have to write out `function(x)` or `\(x)` 
+(@) A side-effect function is one that does not do anything to transform the data that is put in, but instead produces some other object or other effect (e.g. `print()`)
+(@) R is able to distinguish between the variable sd used inside a function and the actual function `sd` because of lexical scoping. If sd is used as a variable inside a function, then R will search that function's environment first for that variable's definition. The function `sd` resides in the stats namespace, which is further down the search path, so R will not use that definition as long as it finds the variable in one of the other environments it searched first.
+
+# Task 2: Writing R Functions
+
+## 1. Root Mean Square Error (RMSE) Function
+
+- Arguments: two vectors (predictions and responses), allow additional (...)
+- Use mean() in the body of the function
+- Output: RMSE
+
+```{r}
+getRMSE <- function(resp, pred, ...) {
+  
+  # validation step
+  if(!(is.vector(resp) & is.vector(pred))){
+    stop('arguments must both be vectors')
+  } else if(length(resp) != length(pred)) {
+    stop('vectors must be of same length')
+  }
+  
+  # compute the squared differences
+  squared_diffs <- (resp - pred)^2 
+  
+  # find the mean (with option for more arguments)
+  mean_diff <- mean(squared_diffs, ...)
+  
+  # return the square root of that
+  return(sqrt(mean_diff))
+}
+```
+
+## 2. Test the RMSE function
+
+Populate values for response and prediction
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10 * x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+```
+
+### Test 1: no missing values
+
+```{r}
+getRMSE(resp, pred)
+```
+### Test 2: missing values
+
+Replace 2 values in response vector with missing 
+
+```{r}
+# arbitrarily picked 31 and 57
+resp[31] <- resp[57] <- NA_real_
+```
+
+Test 2a: without specifying how to handle missing
+
+```{r}
+getRMSE(resp, pred)
+```
+
+Test 2b: exclude missing from mean
+
+```{r}
+getRMSE(resp, pred, na.rm = TRUE)
+```
+## 3. Mean Absolute Deviation (MAE) Function
+
+```{r}
+getMAE <- function(resp, pred, ...) {
+  
+  # validation step
+  if(!(is.vector(resp) & is.vector(pred))){
+    stop('arguments must both be vectors')
+  } else if(length(resp) != length(pred)) {
+    stop('vectors must be of same length')
+  }
+  
+  # compute the differences of absolute values
+  abs_diffs <- abs(resp - pred)
+  
+  # find the mean (with option for more arguments)
+  mean_diff <- mean(abs_diffs, ...)
+  
+  # return that
+  return(mean_diff)
+}
+```
+
+## 4. Test the MAE function
+
+Populate values for response and prediction
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10 * x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+```
+
+### Test 1: no missing values
+
+```{r}
+getMAE(resp, pred)
+```
+### Test 2: missing values
+
+Replace 2 values in response vector with missing 
+
+```{r}
+# arbitrarily picked 19 and 21
+resp[19] <- resp[21] <- NA_real_
+```
+
+Test 2a: without specifying how to handle missing
+
+```{r}
+getMAE(resp, pred)
+```
+
+Test 2b: exclude missing from mean
+
+```{r}
+getMAE(resp, pred, na.rm = TRUE)
+```
+
+## 5. Wrapper function
+
+- takes in 2 vectors (resp and pred)
+- validate input (atomic vectors, numeric)
+- return both metrics by default, include names
+- metrics to be returned can be changed by user-supplied character strings 
+
+```{r}
+getMetrics <- function(resp, pred, ...) {
+  
+  # validate inputs
+  if(!(is.vector(resp) & is.vector(pred))){
+    stop('arguments must both be vectors')
+  } else if(length(resp) != length(pred)) {
+    stop('vectors must be of same length')
+  } else if (!(is.atomic(resp) & is.atomic(pred))) {
+    stop('vectors must be atomic')
+  } else if (!(is.numeric(resp) & is.numeric(pred))) {
+    stop('vectors must be numeric')
+  }
+  
+  # store all arguments, including the unnamed arguments
+  args <- list(resp, pred, ...)
+  
+  # create metrics subset list (i.e. contains RMSE, MAE)
+  metrics <- args[toupper(args) %in% c("RMSE", "MAE")]
+  
+  # delete the metrics from the args list, leaving just the vectors and unnamed args
+  args <- args |>
+    setdiff(metrics)
+  
+  # preserve metrics as names (to apply later to the results list)
+  names(metrics) <- unlist(metrics)
+  
+  # add "get" to the front of the metric that was passed in to make them match the function names (made uppercase)
+  metrics <- map(metrics, \(x) paste0("get", toupper(x)))
+  
+  # create empty list for results
+  results <- list()
+  
+  # each element in the list is now a function - use do.call to call the function by a variable
+  for (i in 1:length(metrics)) {
+    results[i] <- do.call(metrics[[i]], args)
+    names(results)[i] <- names(metrics)[i]
+  }
+  
+  # return results
+  return(results)
+}
+```
+
+## 6. Testing 
+
+Populate values for response and prediction
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10 * x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+```
+
+### Test 1: no missing values
+
+Metric: RMSE
+```{r}
+getMetrics(resp, pred, "rmse")
+```
+Metric: MAE
+```{r}
+getMetrics(resp, pred, "mae")
+```
+
+Metric: Both
+```{r}
+getMetrics(resp, pred, "RMSE", "MAE")
+```
+
+### Test 2: missing values
+
+Replace 2 values in response vector with missing 
+
+```{r}
+# arbitrarily picked 44 and 91
+resp[44] <- resp[91] <- NA_real_
+```
+
+Test 2a: without specifying how to handle missing
+
+```{r}
+getMetrics(resp, pred, "mae", "rmse")
+```
+
+Test 2b: exclude missing from calculations
+
+```{r}
+getMetrics(resp, pred, "MAE", "RMSE", na.rm = TRUE)
+```
+
+### Test 3: Invalid data
+
+```{r}
+#| error = TRUE
+  
+bad_input <- data.frame(a = 1:100)
+
+getMetrics(bad_input, pred, "mae", na.rm = TRUE)
+```
+
+
+# Task 3: Querying an API and a Tidy-Style Function
+
+## Query the News API
+
+- Variables for query function: subject, from_date, api_key
+- Note: values must be URL-encoded, so change spaces to %20 in subject search string
+- NewsAPI documentation states that a maximum of 100 results per page are returned (100 results is also the maximum per page). As a result, have to page through the results using the page parameter in the URL
+- Up to 500 total records will be returned for a single query, even if there are more pages to be pulled. Through testing, I consistently got a 426 error code from the API server after pulling 5 pages in a loop. I'm guessing it exceeds the maximum number of requests that can be filled within a short range of time 
+
+Function to query the news API
+
+```{r}
+query_news_api <- function(subject = "health", 
+                           from_date = "", 
+                           api_key = "96a47f770685492faaf437063d733d14") {
+  
+  # if from_date is empty string, assign yesterday's date
+  if (from_date == "") {
+    from_date <- as.character(Sys.Date() - 1)
+  }
+  
+  # replace spaces in subject with '%20'
+  subject <- gsub(" ", "%20", subject)
+  
+  # helper function to construct url for 1st page
+  url <- construct_url(subject, from_date, api_key, page = 1)
+  
+  # query the API
+  info <- GET(url) 
+
+  # raw results from JSON
+  raw_results <- fromJSON(rawToChar(info$content))
+  
+  # store how many total results there are
+  total_results <- raw_results |>
+    pluck("totalResults")
+    
+  # parse results and get to data frame
+  news_articles <- raw_results |>
+    pluck("articles")
+  
+  # if total results are more than 100, call helper to query more pages
+  if (total_results > 100) {
+    news_articles <- query_more_pages(news_articles, 
+                                      subject, 
+                                      from_date, 
+                                      api_key,
+                                      total_results)
+  }
+  
+  # return the data frame
+  return(news_articles)
+
+}
+
+```
+
+helper function to construct URL 
+
+```{r}
+construct_url <- function(subject, from_date, api_key, page = 1) {
+  
+  url <- paste0("https://newsapi.org/v2/everything?q=", subject,
+                "&from=", from_date,
+                "&page=", page,
+                "&sortBy=popularity",
+                "&apiKey=", api_key)
+
+  # print URL to console
+  print(paste0("Query URL: ", url))
+  
+  # return URL
+  return(url)
+  
+}
+
+```
+
+helper function to query more pages
+
+```{r}
+query_more_pages <- function(news_articles, subject, from_date, api_key, total_results) {
+  
+  # find how many pages need to be queried
+  total_pages <- ceiling(total_results / 100)
+  
+  # total_pages can't exceed 5 (server errors above 5 requests in short succession)
+  if (total_pages > 5) {
+    total_pages <- 5
+  }
+  
+  # execute a loop to query each additional page and add them to the data frame
+  for (i in 2:total_pages) {
+    
+    # helper function to construct url for page number 
+    url <- construct_url(subject, from_date, api_key, page = i)
+  
+    # query the API
+    info <- GET(url)
+    
+    # print status code to the console (testing only)
+    print(paste0("Status code: ", info$status_code))
+    
+    # parse results and get to data frame
+    next_page <- fromJSON(rawToChar(info$content)) |>
+      pluck("articles")
+  
+    # add the next page to the existing data frame
+    news_articles <- news_articles |>
+      bind_rows(next_page)
+  }
+  
+  return(news_articles)
+}
+
+```
+
+
+## Test the API query function
+
+### Test 1: Using defaults for the query function
+
+```{r}
+health_news <- query_news_api()
+```
+Result of query 1
+
+```{r}
+as_tibble(health_news)
+```
+*Note: printed as a tibble so it looks nice*
+
+Summary for the name of the source (one-way contingency table)
+
+```{r}
+health_news |> 
+  pull(source) |>
+  group_by(name) |>
+  drop_na(name) |>
+  summarize(count = n())
+```
+
+### Test 2: Specifying arguments for the query function
+
+```{r}
+autoimmune_news <- query_news_api("autoimmune diseases", 
+                                  "2024-10-01")
+```
+
+## Date fields and stuff
+
+### Modifications to the data frames
+
+- PublishedAt converted from char to datetime 
+- Sort by PublishedAt datetime
+- Add new column pub_diff to show span of time between one article and the next
+- Save modified data frames to new variable
+
+Create a function to do this (since it's being repeated for both data frames)
+
+```{r}
+news_date_modifications <- function(news_df) {
+  
+  # recast char column for published At as date-time
+  news_df$publishedAt <- ymd_hms(news_df$publishedAt)
+  
+  # sort by published date
+  news_df <- news_df |>
+    arrange(publishedAt)
+  
+  # add new variable for publish difference
+  news_df <- news_df |>
+    mutate(pub_diff = lag(publishedAt))
+
+  return(news_df)
+}
+
+```
+
+
