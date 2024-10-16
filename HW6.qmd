@@ -17,10 +17,10 @@ library(jsonlite)
 (@) The purpose of the lapply() function is to apply a function to a list, and it returns a list. The equivalent function in purrr is map(). 
 (@) lapply(my_list, cor, method = "kendall")
 (@) Advantages of using purrr functions instead of the apply family in Base R
-    - The way arguments are taken in purrr functions is more consistent, e.g. in the purrr functions it seems to be that they take in data first and then the function, but in the base R functions this order varies
+    - The way arguments are taken in purrr functions is more consistent, e.g. in the purrr functions, they take in data first and then the function, but in the base R functions this order varies
     - purrr also contains helper functions like `~`, which lets you define anonymous functions in a more succinct way than in base R, where you have to write out `function(x)` or `\(x)` 
 (@) A side-effect function is one that does not do anything to transform the data that is put in, but instead produces some other object or other effect (e.g. `print()`)
-(@) R is able to distinguish between the variable sd used inside a function and the actual function `sd` because of lexical scoping. If sd is used as a variable inside a function, then R will search that function's environment first for that variable's definition. The function `sd` resides in the stats namespace, which is further down the search path, so R will not use that definition as long as it finds the variable in one of the other environments it searched first.
+(@) R is able to distinguish between the variable sd used inside a function and the actual function `sd` because of lexical scoping. If sd is used as a variable inside a function, then R will search that function's environment first for that variable's definition. The function `sd` resides in the stats namespace, which is further up the search path, so R will not use that definition as long as it finds the variable in one of the other environments it searched first.
 
 # Task 2: Writing R Functions
 
@@ -409,9 +409,9 @@ autoimmune_news <- query_news_api("autoimmune diseases",
                                   "2024-10-01")
 ```
 
-## Date fields and stuff
+## Modifications and summaries based on PublishedAt
 
-### Modifications to the data frames
+### PublishedAt Modifications
 
 - PublishedAt converted from char to datetime 
 - Sort by PublishedAt datetime
@@ -432,11 +432,42 @@ news_date_modifications <- function(news_df) {
   
   # add new variable for publish difference
   news_df <- news_df |>
-    mutate(pub_diff = lag(publishedAt))
+    mutate(pub_diff = publishedAt - lag(publishedAt))
 
   return(news_df)
 }
 
 ```
 
+Run the above modifications on both data sets
+
+Health news data frame
+
+```{r}
+health_news_mod <- news_date_modifications(health_news)
+
+head(health_news_mod)
+```
+
+Autoimmune diseases news data frame
+```{r}
+autoimmune_news_mod <- news_date_modifications(autoimmune_news)
+
+head(autoimmune_news_mod)
+```
+
+### Summaries
+
+Find mean, sd, and median for two columns, publishedAt and pub_diff
+
+- Use anonymous function within map
+- Have to pass 3 functions to 2 columns
+
+```{r}
+health_news_mod |>
+  select(publishedAt, pub_diff) |>
+  map(\(x) list("mean" = mean(x, na.rm = TRUE), 
+                "sd" = sd(x, na.rm = TRUE), 
+                "median" = median(x, na.rm = TRUE)))
+```
 
