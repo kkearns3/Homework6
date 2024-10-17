@@ -2,8 +2,6 @@
 title: "Homework6"
 format: html
 toc: TRUE 
-execute:
-  eval: FALSE
 ---
 
 *Libraries*

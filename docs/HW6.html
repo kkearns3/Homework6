@@ -179,9 +179,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p><em>Libraries</em></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'jsonlite'
+
+The following object is masked from 'package:purrr':
+
+    flatten</code></pre>
+</div>
 </div>
 <section id="task-1-conceptual-questions" class="level1">
 <h1>Task 1: Conceptual Questions</h1>
@@ -207,112 +227,130 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Output: RMSE</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>getRMSE <span class="ot">&lt;-</span> <span class="cf">function</span>(resp, pred, ...) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># validation step</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span>(<span class="fu">is.vector</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.vector</span>(pred))){</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'arguments must both be vectors'</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span>(<span class="fu">length</span>(resp) <span class="sc">!=</span> <span class="fu">length</span>(pred)) {</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be of same length'</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute the squared differences</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  squared_diffs <span class="ot">&lt;-</span> (resp <span class="sc">-</span> pred)<span class="sc">^</span><span class="dv">2</span> </span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find the mean (with option for more arguments)</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  mean_diff <span class="ot">&lt;-</span> <span class="fu">mean</span>(squared_diffs, ...)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return the square root of that</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">sqrt</span>(mean_diff))</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>getRMSE <span class="ot">&lt;-</span> <span class="cf">function</span>(resp, pred, ...) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># validation step</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span>(<span class="fu">is.vector</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.vector</span>(pred))){</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'arguments must both be vectors'</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span>(<span class="fu">length</span>(resp) <span class="sc">!=</span> <span class="fu">length</span>(pred)) {</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be of same length'</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute the squared differences</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  squared_diffs <span class="ot">&lt;-</span> (resp <span class="sc">-</span> pred)<span class="sc">^</span><span class="dv">2</span> </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find the mean (with option for more arguments)</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  mean_diff <span class="ot">&lt;-</span> <span class="fu">mean</span>(squared_diffs, ...)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return the square root of that</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">sqrt</span>(mean_diff))</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="test-the-rmse-function" class="level2">
 <h2 class="anchored" data-anchor-id="test-the-rmse-function">2. Test the RMSE function</h2>
 <p>Populate values for response and prediction</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">10</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">lm</span>(resp <span class="sc">~</span> x), <span class="fu">data.frame</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">10</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">lm</span>(resp <span class="sc">~</span> x), <span class="fu">data.frame</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="test-1-no-missing-values" class="level3">
 <h3 class="anchored" data-anchor-id="test-1-no-missing-values">Test 1: no missing values</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getRMSE</span>(resp, pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getRMSE</span>(resp, pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9581677</code></pre>
+</div>
 </div>
 </section>
 <section id="test-2-missing-values" class="level3">
 <h3 class="anchored" data-anchor-id="test-2-missing-values">Test 2: missing values</h3>
 <p>Replace 2 values in response vector with missing</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># arbitrarily picked 31 and 57</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>resp[<span class="dv">31</span>] <span class="ot">&lt;-</span> resp[<span class="dv">57</span>] <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># arbitrarily picked 31 and 57</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>resp[<span class="dv">31</span>] <span class="ot">&lt;-</span> resp[<span class="dv">57</span>] <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Test 2a: without specifying how to handle missing</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getRMSE</span>(resp, pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getRMSE</span>(resp, pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
 </div>
 <p>Test 2b: exclude missing from mean</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getRMSE</span>(resp, pred, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getRMSE</span>(resp, pred, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9645809</code></pre>
+</div>
 </div>
 </section>
 </section>
 <section id="mean-absolute-deviation-mae-function" class="level2">
 <h2 class="anchored" data-anchor-id="mean-absolute-deviation-mae-function">3. Mean Absolute Deviation (MAE) Function</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>getMAE <span class="ot">&lt;-</span> <span class="cf">function</span>(resp, pred, ...) {</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># validation step</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span>(<span class="fu">is.vector</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.vector</span>(pred))){</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'arguments must both be vectors'</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span>(<span class="fu">length</span>(resp) <span class="sc">!=</span> <span class="fu">length</span>(pred)) {</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be of same length'</span>)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute the differences of absolute values</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  abs_diffs <span class="ot">&lt;-</span> <span class="fu">abs</span>(resp <span class="sc">-</span> pred)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find the mean (with option for more arguments)</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  mean_diff <span class="ot">&lt;-</span> <span class="fu">mean</span>(abs_diffs, ...)</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return that</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(mean_diff)</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>getMAE <span class="ot">&lt;-</span> <span class="cf">function</span>(resp, pred, ...) {</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># validation step</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span>(<span class="fu">is.vector</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.vector</span>(pred))){</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'arguments must both be vectors'</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span>(<span class="fu">length</span>(resp) <span class="sc">!=</span> <span class="fu">length</span>(pred)) {</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be of same length'</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute the differences of absolute values</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  abs_diffs <span class="ot">&lt;-</span> <span class="fu">abs</span>(resp <span class="sc">-</span> pred)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find the mean (with option for more arguments)</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  mean_diff <span class="ot">&lt;-</span> <span class="fu">mean</span>(abs_diffs, ...)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return that</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(mean_diff)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="test-the-mae-function" class="level2">
 <h2 class="anchored" data-anchor-id="test-the-mae-function">4. Test the MAE function</h2>
 <p>Populate values for response and prediction</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">10</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">lm</span>(resp <span class="sc">~</span> x), <span class="fu">data.frame</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">10</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">lm</span>(resp <span class="sc">~</span> x), <span class="fu">data.frame</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="test-1-no-missing-values-1" class="level3">
 <h3 class="anchored" data-anchor-id="test-1-no-missing-values-1">Test 1: no missing values</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMAE</span>(resp, pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMAE</span>(resp, pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8155776</code></pre>
+</div>
 </div>
 </section>
 <section id="test-2-missing-values-1" class="level3">
 <h3 class="anchored" data-anchor-id="test-2-missing-values-1">Test 2: missing values</h3>
 <p>Replace 2 values in response vector with missing</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># arbitrarily picked 19 and 21</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>resp[<span class="dv">19</span>] <span class="ot">&lt;-</span> resp[<span class="dv">21</span>] <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># arbitrarily picked 19 and 21</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>resp[<span class="dv">19</span>] <span class="ot">&lt;-</span> resp[<span class="dv">21</span>] <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Test 2a: without specifying how to handle missing</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMAE</span>(resp, pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMAE</span>(resp, pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
 </div>
 <p>Test 2b: exclude missing from mean</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMAE</span>(resp, pred, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMAE</span>(resp, pred, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8251992</code></pre>
+</div>
 </div>
 </section>
 </section>
@@ -325,96 +363,128 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>metrics to be returned can be changed by user-supplied character strings</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>getMetrics <span class="ot">&lt;-</span> <span class="cf">function</span>(resp, pred, ...) {</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># validate inputs</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span>(<span class="fu">is.vector</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.vector</span>(pred))){</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'arguments must both be vectors'</span>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span>(<span class="fu">length</span>(resp) <span class="sc">!=</span> <span class="fu">length</span>(pred)) {</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be of same length'</span>)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span>(<span class="fu">is.atomic</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.atomic</span>(pred))) {</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be atomic'</span>)</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span>(<span class="fu">is.numeric</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.numeric</span>(pred))) {</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be numeric'</span>)</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># store all arguments, including the unnamed arguments</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  args <span class="ot">&lt;-</span> <span class="fu">list</span>(resp, pred, ...)</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create metrics subset list (i.e. contains RMSE, MAE)</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  metrics <span class="ot">&lt;-</span> args[<span class="fu">toupper</span>(args) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"RMSE"</span>, <span class="st">"MAE"</span>)]</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># delete the metrics from the args list, leaving just the vectors and unnamed args</span></span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  args <span class="ot">&lt;-</span> args <span class="sc">|&gt;</span></span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setdiff</span>(metrics)</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># preserve metrics as names (to apply later to the results list)</span></span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(metrics) <span class="ot">&lt;-</span> <span class="fu">unlist</span>(metrics)</span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add "get" to the front of the metric that was passed in to make them match the function names (made uppercase)</span></span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  metrics <span class="ot">&lt;-</span> <span class="fu">map</span>(metrics, \(x) <span class="fu">paste0</span>(<span class="st">"get"</span>, <span class="fu">toupper</span>(x)))</span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create empty list for results</span></span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each element in the list is now a function - use do.call to call the function by a variable</span></span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(metrics)) {</span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    results[i] <span class="ot">&lt;-</span> <span class="fu">do.call</span>(metrics[[i]], args)</span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">names</span>(results)[i] <span class="ot">&lt;-</span> <span class="fu">names</span>(metrics)[i]</span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return results</span></span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(results)</span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>getMetrics <span class="ot">&lt;-</span> <span class="cf">function</span>(resp, pred, ...) {</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># validate inputs</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span>(<span class="fu">is.vector</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.vector</span>(pred))){</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'arguments must both be vectors'</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span>(<span class="fu">length</span>(resp) <span class="sc">!=</span> <span class="fu">length</span>(pred)) {</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be of same length'</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span>(<span class="fu">is.atomic</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.atomic</span>(pred))) {</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be atomic'</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span>(<span class="fu">is.numeric</span>(resp) <span class="sc">&amp;</span> <span class="fu">is.numeric</span>(pred))) {</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">'vectors must be numeric'</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># store all arguments, including the unnamed arguments</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  args <span class="ot">&lt;-</span> <span class="fu">list</span>(resp, pred, ...)</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create metrics subset list (i.e. contains RMSE, MAE)</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  metrics <span class="ot">&lt;-</span> args[<span class="fu">toupper</span>(args) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"RMSE"</span>, <span class="st">"MAE"</span>)]</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># delete the metrics from the args list, leaving just the vectors and unnamed args</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>  args <span class="ot">&lt;-</span> args <span class="sc">|&gt;</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setdiff</span>(metrics)</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># preserve metrics as names (to apply later to the results list)</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(metrics) <span class="ot">&lt;-</span> <span class="fu">unlist</span>(metrics)</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add "get" to the front of the metric that was passed in to make them match the function names (made uppercase)</span></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>  metrics <span class="ot">&lt;-</span> <span class="fu">map</span>(metrics, \(x) <span class="fu">paste0</span>(<span class="st">"get"</span>, <span class="fu">toupper</span>(x)))</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create empty list for results</span></span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each element in the list is now a function - use do.call to call the function by a variable</span></span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(metrics)) {</span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>    results[i] <span class="ot">&lt;-</span> <span class="fu">do.call</span>(metrics[[i]], args)</span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">names</span>(results)[i] <span class="ot">&lt;-</span> <span class="fu">names</span>(metrics)[i]</span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return results</span></span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(results)</span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="testing" class="level2">
 <h2 class="anchored" data-anchor-id="testing">6. Testing</h2>
 <p>Populate values for response and prediction</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">10</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">lm</span>(resp <span class="sc">~</span> x), <span class="fu">data.frame</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">10</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">lm</span>(resp <span class="sc">~</span> x), <span class="fu">data.frame</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="test-1-no-missing-values-2" class="level3">
 <h3 class="anchored" data-anchor-id="test-1-no-missing-values-2">Test 1: no missing values</h3>
 <p>Metric: RMSE</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"rmse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"rmse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$rmse
+[1] 0.9581677</code></pre>
+</div>
 </div>
 <p>Metric: MAE</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"mae"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"mae"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$mae
+[1] 0.8155776</code></pre>
+</div>
 </div>
 <p>Metric: Both</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"RMSE"</span>, <span class="st">"MAE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"RMSE"</span>, <span class="st">"MAE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$RMSE
+[1] 0.9581677
+
+$MAE
+[1] 0.8155776</code></pre>
+</div>
 </div>
 </section>
 <section id="test-2-missing-values-2" class="level3">
 <h3 class="anchored" data-anchor-id="test-2-missing-values-2">Test 2: missing values</h3>
 <p>Replace 2 values in response vector with missing</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># arbitrarily picked 44 and 91</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>resp[<span class="dv">44</span>] <span class="ot">&lt;-</span> resp[<span class="dv">91</span>] <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># arbitrarily picked 44 and 91</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>resp[<span class="dv">44</span>] <span class="ot">&lt;-</span> resp[<span class="dv">91</span>] <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Test 2a: without specifying how to handle missing</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"mae"</span>, <span class="st">"rmse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"mae"</span>, <span class="st">"rmse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$mae
+[1] NA
+
+$rmse
+[1] NA</code></pre>
+</div>
 </div>
 <p>Test 2b: exclude missing from calculations</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"MAE"</span>, <span class="st">"RMSE"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(resp, pred, <span class="st">"MAE"</span>, <span class="st">"RMSE"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$MAE
+[1] 0.8044114
+
+$RMSE
+[1] 0.9465798</code></pre>
+</div>
 </div>
 </section>
 <section id="test-3-invalid-data" class="level3">
 <h3 class="anchored" data-anchor-id="test-3-invalid-data">Test 3: Invalid data</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>bad_input <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">a =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(bad_input, pred, <span class="st">"mae"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>bad_input <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">a =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">getMetrics</span>(bad_input, pred, <span class="st">"mae"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in getMetrics(bad_input, pred, "mae", na.rm = TRUE): arguments must both be vectors</code></pre>
+</div>
 </div>
 </section>
 </section>
@@ -431,102 +501,102 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Function to query the news API</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>query_news_api <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">subject =</span> <span class="st">"health"</span>, </span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">from_date =</span> <span class="st">""</span>, </span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">api_key =</span> <span class="st">"96a47f770685492faaf437063d733d14"</span>) {</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># if from_date is empty string, assign yesterday's date</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (from_date <span class="sc">==</span> <span class="st">""</span>) {</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    from_date <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">Sys.Date</span>() <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># replace spaces in subject with '%20'</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  subject <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">"%20"</span>, subject)</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># helper function to construct url for 1st page</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  url <span class="ot">&lt;-</span> <span class="fu">construct_url</span>(subject, from_date, api_key, <span class="at">page =</span> <span class="dv">1</span>)</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># query the API</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  info <span class="ot">&lt;-</span> <span class="fu">GET</span>(url) </span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># raw results from JSON</span></span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  raw_results <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="fu">rawToChar</span>(info<span class="sc">$</span>content))</span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># store how many total results there are</span></span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  total_results <span class="ot">&lt;-</span> raw_results <span class="sc">|&gt;</span></span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pluck</span>(<span class="st">"totalResults"</span>)</span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># parse results and get to data frame</span></span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>  news_articles <span class="ot">&lt;-</span> raw_results <span class="sc">|&gt;</span></span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pluck</span>(<span class="st">"articles"</span>)</span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># if total results are more than 100, call helper to query more pages</span></span>
-<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (total_results <span class="sc">&gt;</span> <span class="dv">100</span>) {</span>
-<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>    news_articles <span class="ot">&lt;-</span> <span class="fu">query_more_pages</span>(news_articles, </span>
-<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>                                      subject, </span>
-<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>                                      from_date, </span>
-<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>                                      api_key,</span>
-<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>                                      total_results)</span>
-<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return the data frame</span></span>
-<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(news_articles)</span>
-<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>query_news_api <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">subject =</span> <span class="st">"health"</span>, </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">from_date =</span> <span class="st">""</span>, </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">api_key =</span> <span class="st">"96a47f770685492faaf437063d733d14"</span>) {</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># if from_date is empty string, assign yesterday's date</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (from_date <span class="sc">==</span> <span class="st">""</span>) {</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    from_date <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">Sys.Date</span>() <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># replace spaces in subject with '%20'</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  subject <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">"%20"</span>, subject)</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># helper function to construct url for 1st page</span></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>  url <span class="ot">&lt;-</span> <span class="fu">construct_url</span>(subject, from_date, api_key, <span class="at">page =</span> <span class="dv">1</span>)</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># query the API</span></span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>  info <span class="ot">&lt;-</span> <span class="fu">GET</span>(url) </span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># raw results from JSON</span></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>  raw_results <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="fu">rawToChar</span>(info<span class="sc">$</span>content))</span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># store how many total results there are</span></span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>  total_results <span class="ot">&lt;-</span> raw_results <span class="sc">|&gt;</span></span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pluck</span>(<span class="st">"totalResults"</span>)</span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># parse results and get to data frame</span></span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>  news_articles <span class="ot">&lt;-</span> raw_results <span class="sc">|&gt;</span></span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pluck</span>(<span class="st">"articles"</span>)</span>
+<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># if total results are more than 100, call helper to query more pages</span></span>
+<span id="cb38-31"><a href="#cb38-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (total_results <span class="sc">&gt;</span> <span class="dv">100</span>) {</span>
+<span id="cb38-32"><a href="#cb38-32" aria-hidden="true" tabindex="-1"></a>    news_articles <span class="ot">&lt;-</span> <span class="fu">query_more_pages</span>(news_articles, </span>
+<span id="cb38-33"><a href="#cb38-33" aria-hidden="true" tabindex="-1"></a>                                      subject, </span>
+<span id="cb38-34"><a href="#cb38-34" aria-hidden="true" tabindex="-1"></a>                                      from_date, </span>
+<span id="cb38-35"><a href="#cb38-35" aria-hidden="true" tabindex="-1"></a>                                      api_key,</span>
+<span id="cb38-36"><a href="#cb38-36" aria-hidden="true" tabindex="-1"></a>                                      total_results)</span>
+<span id="cb38-37"><a href="#cb38-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb38-38"><a href="#cb38-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-39"><a href="#cb38-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return the data frame</span></span>
+<span id="cb38-40"><a href="#cb38-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(news_articles)</span>
+<span id="cb38-41"><a href="#cb38-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-42"><a href="#cb38-42" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>helper function to construct URL</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>construct_url <span class="ot">&lt;-</span> <span class="cf">function</span>(subject, from_date, api_key, <span class="at">page =</span> <span class="dv">1</span>) {</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://newsapi.org/v2/everything?q="</span>, subject,</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">"&amp;from="</span>, from_date,</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">"&amp;page="</span>, page,</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>                <span class="st">"&amp;sortBy=popularity"</span>,</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                <span class="st">"&amp;apiKey="</span>, api_key)</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># print URL to console</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Query URL: "</span>, url))</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return URL</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(url)</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>construct_url <span class="ot">&lt;-</span> <span class="cf">function</span>(subject, from_date, api_key, <span class="at">page =</span> <span class="dv">1</span>) {</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://newsapi.org/v2/everything?q="</span>, subject,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">"&amp;from="</span>, from_date,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">"&amp;page="</span>, page,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>                <span class="st">"&amp;sortBy=popularity"</span>,</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>                <span class="st">"&amp;apiKey="</span>, api_key)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># print URL to console</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Query URL: "</span>, url))</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return URL</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(url)</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>helper function to query more pages</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>query_more_pages <span class="ot">&lt;-</span> <span class="cf">function</span>(news_articles, subject, from_date, api_key, total_results) {</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find how many pages need to be queried</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  total_pages <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(total_results <span class="sc">/</span> <span class="dv">100</span>)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># total_pages can't exceed 5 (server errors above 5 requests in short succession)</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (total_pages <span class="sc">&gt;</span> <span class="dv">5</span>) {</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    total_pages <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># execute a loop to query each additional page and add them to the data frame</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>total_pages) {</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># helper function to construct url for page number </span></span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    url <span class="ot">&lt;-</span> <span class="fu">construct_url</span>(subject, from_date, api_key, <span class="at">page =</span> i)</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># query the API</span></span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    info <span class="ot">&lt;-</span> <span class="fu">GET</span>(url)</span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># print status code to the console (testing only)</span></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Status code: "</span>, info<span class="sc">$</span>status_code))</span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># parse results and get to data frame</span></span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>    next_page <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="fu">rawToChar</span>(info<span class="sc">$</span>content)) <span class="sc">|&gt;</span></span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">pluck</span>(<span class="st">"articles"</span>)</span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add the next page to the existing data frame</span></span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>    news_articles <span class="ot">&lt;-</span> news_articles <span class="sc">|&gt;</span></span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bind_rows</span>(next_page)</span>
-<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(news_articles)</span>
-<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>query_more_pages <span class="ot">&lt;-</span> <span class="cf">function</span>(news_articles, subject, from_date, api_key, total_results) {</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find how many pages need to be queried</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  total_pages <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(total_results <span class="sc">/</span> <span class="dv">100</span>)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># total_pages can't exceed 5 (server errors above 5 requests in short succession)</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (total_pages <span class="sc">&gt;</span> <span class="dv">5</span>) {</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    total_pages <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># execute a loop to query each additional page and add them to the data frame</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>total_pages) {</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># helper function to construct url for page number </span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>    url <span class="ot">&lt;-</span> <span class="fu">construct_url</span>(subject, from_date, api_key, <span class="at">page =</span> i)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># query the API</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>    info <span class="ot">&lt;-</span> <span class="fu">GET</span>(url)</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># print status code to the console (testing only)</span></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Status code: "</span>, info<span class="sc">$</span>status_code))</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># parse results and get to data frame</span></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>    next_page <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="fu">rawToChar</span>(info<span class="sc">$</span>content)) <span class="sc">|&gt;</span></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">pluck</span>(<span class="st">"articles"</span>)</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add the next page to the existing data frame</span></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>    news_articles <span class="ot">&lt;-</span> news_articles <span class="sc">|&gt;</span></span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bind_rows</span>(next_page)</span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(news_articles)</span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="test-the-api-query-function" class="level2">
@@ -534,27 +604,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="test-1-using-defaults-for-the-query-function" class="level3">
 <h3 class="anchored" data-anchor-id="test-1-using-defaults-for-the-query-function">Test 1: Using defaults for the query function</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>health_news <span class="ot">&lt;-</span> <span class="fu">query_news_api</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>health_news <span class="ot">&lt;-</span> <span class="fu">query_news_api</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Query URL: https://newsapi.org/v2/everything?q=health&amp;from=2024-10-15&amp;page=1&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Query URL: https://newsapi.org/v2/everything?q=health&amp;from=2024-10-15&amp;page=2&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Status code: 200"
+[1] "Query URL: https://newsapi.org/v2/everything?q=health&amp;from=2024-10-15&amp;page=3&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Status code: 200"
+[1] "Query URL: https://newsapi.org/v2/everything?q=health&amp;from=2024-10-15&amp;page=4&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Status code: 200"
+[1] "Query URL: https://newsapi.org/v2/everything?q=health&amp;from=2024-10-15&amp;page=5&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Status code: 200"</code></pre>
+</div>
 </div>
 <p>Result of query 1</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tibble</span>(health_news)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tibble</span>(health_news)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 8
+   source$id $name author title description url   urlToImage publishedAt content
+   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;  
+ 1 &lt;NA&gt;      Gizm… Adam … X-Ra… Some denti… http… https://g… 2024-10-15… "If yo…
+ 2 &lt;NA&gt;      BBC … &lt;NA&gt;   NHS … The health… http… https://i… 2024-10-15… "The w…
+ 3 &lt;NA&gt;      BBC … &lt;NA&gt;   Why … Ministers … http… https://i… 2024-10-15… "Sir K…
+ 4 &lt;NA&gt;      BBC … &lt;NA&gt;   Poli… The regula… http… https://i… 2024-10-15… "The H…
+ 5 &lt;NA&gt;      BBC … &lt;NA&gt;   Fami… Support se… http… https://i… 2024-10-15… "Hundr…
+ 6 &lt;NA&gt;      BBC … &lt;NA&gt;   Auti… Maisie's f… http… https://i… 2024-10-15… "Maisi…
+ 7 &lt;NA&gt;      BBC … &lt;NA&gt;   This… Elliot wan… http… https://i… 2024-10-15… "Disab…
+ 8 &lt;NA&gt;      BBC … &lt;NA&gt;   Jobl… The health… http… https://i… 2024-10-15… "Unemp…
+ 9 &lt;NA&gt;      BBC … &lt;NA&gt;   Dad … A father w… http… https://i… 2024-10-15… "The f…
+10 &lt;NA&gt;      Andr… sharm… How … The Oura R… http… https://c… 2024-10-15… "How l…
+# ℹ 490 more rows</code></pre>
+</div>
 </div>
 <p><em>Note: printed as a tibble so it looks nice</em></p>
 <p>Summary for the name of the source (one-way contingency table)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>health_news <span class="sc">|&gt;</span> </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(source) <span class="sc">|&gt;</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">|&gt;</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(name) <span class="sc">|&gt;</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>health_news <span class="sc">|&gt;</span> </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(source) <span class="sc">|&gt;</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">|&gt;</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(name) <span class="sc">|&gt;</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 177 × 2
+   name                count
+   &lt;chr&gt;               &lt;int&gt;
+ 1 120.136                 1
+ 2 9to5Mac                 1
+ 3 9to5google.com          4
+ 4 ABC News                3
+ 5 ABC News (AU)          12
+ 6 AdExchanger             1
+ 7 Advocate.com            4
+ 8 Al Jazeera English      6
+ 9 Amazon.com              1
+10 Americanthinker.com     2
+# ℹ 167 more rows</code></pre>
+</div>
 </div>
 </section>
 <section id="test-2-specifying-arguments-for-the-query-function" class="level3">
 <h3 class="anchored" data-anchor-id="test-2-specifying-arguments-for-the-query-function">Test 2: Specifying arguments for the query function</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>autoimmune_news <span class="ot">&lt;-</span> <span class="fu">query_news_api</span>(<span class="st">"autoimmune diseases"</span>, </span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">"2024-10-01"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>autoimmune_news <span class="ot">&lt;-</span> <span class="fu">query_news_api</span>(<span class="st">"autoimmune diseases"</span>, </span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">"2024-10-01"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Query URL: https://newsapi.org/v2/everything?q=autoimmune%20diseases&amp;from=2024-10-01&amp;page=1&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Query URL: https://newsapi.org/v2/everything?q=autoimmune%20diseases&amp;from=2024-10-01&amp;page=2&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Status code: 200"
+[1] "Query URL: https://newsapi.org/v2/everything?q=autoimmune%20diseases&amp;from=2024-10-01&amp;page=3&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Status code: 200"
+[1] "Query URL: https://newsapi.org/v2/everything?q=autoimmune%20diseases&amp;from=2024-10-01&amp;page=4&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Status code: 200"
+[1] "Query URL: https://newsapi.org/v2/everything?q=autoimmune%20diseases&amp;from=2024-10-01&amp;page=5&amp;sortBy=popularity&amp;apiKey=96a47f770685492faaf437063d733d14"
+[1] "Status code: 200"</code></pre>
+</div>
 </div>
 </section>
 </section>
@@ -570,34 +694,157 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Create a function to do this (since it’s being repeated for both data frames)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>news_date_modifications <span class="ot">&lt;-</span> <span class="cf">function</span>(news_df) {</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># recast char column for published At as date-time</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  news_df<span class="sc">$</span>publishedAt <span class="ot">&lt;-</span> <span class="fu">ymd_hms</span>(news_df<span class="sc">$</span>publishedAt)</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># sort by published date</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  news_df <span class="ot">&lt;-</span> news_df <span class="sc">|&gt;</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(publishedAt)</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add new variable for publish difference</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  news_df <span class="ot">&lt;-</span> news_df <span class="sc">|&gt;</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">pub_diff =</span> publishedAt <span class="sc">-</span> <span class="fu">lag</span>(publishedAt))</span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(news_df)</span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>news_date_modifications <span class="ot">&lt;-</span> <span class="cf">function</span>(news_df) {</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># recast char column for published At as date-time</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  news_df<span class="sc">$</span>publishedAt <span class="ot">&lt;-</span> <span class="fu">ymd_hms</span>(news_df<span class="sc">$</span>publishedAt)</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># sort by published date</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  news_df <span class="ot">&lt;-</span> news_df <span class="sc">|&gt;</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(publishedAt)</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add new variable for publish difference</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>  news_df <span class="ot">&lt;-</span> news_df <span class="sc">|&gt;</span></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">pub_diff =</span> publishedAt <span class="sc">-</span> <span class="fu">lag</span>(publishedAt))</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(news_df)</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Run the above modifications on both data sets</p>
 <p>Health news data frame</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>health_news_mod <span class="ot">&lt;-</span> <span class="fu">news_date_modifications</span>(health_news)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(health_news_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>health_news_mod <span class="ot">&lt;-</span> <span class="fu">news_date_modifications</span>(health_news)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(health_news_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   source.id          source.name             author
+1       &lt;NA&gt;       Gatesnotes.com         Bill Gates
+2       &lt;NA&gt;          CinemaBlend       Maggie Sheck
+3       &lt;NA&gt;       Digital Trends      Greg Morcroft
+4       &lt;NA&gt; Nbcsportsbayarea.com NBC Sports BayArea
+5 fox-sports           Fox Sports               &lt;NA&gt;
+6       &lt;NA&gt;            [Removed]               &lt;NA&gt;
+                                                                                                        title
+1                                                                             Planes, trains, and smartphones
+2 Nobody Wants This Star Justine Lupe Clears The Air About Her On-Set Pregnancy With An Inspirational Message
+3                                          Vuzix upgrades M400 smart glasses to Android 13, boosting security
+4                                               How Waters' indigenous pride fuels his incredible NBA journey
+5                          Jim Harbaugh wearing heart monitor, taking blood thinner after irregular heartbeat
+6                                                                                                   [Removed]
+                                                                                                                                                   description
+1 Bill Gates explains digital public infrastructure’s benefits—in banking, health, agriculture, crises, and government services—and addresses common concerns.
+2                                                                                                     Justine Lupe adds to an important industry conversation.
+3                                                   Vuzix has upgraded its M400 smart glasses to Android 13 for better security, productivity, and efficiency.
+4           Lindy Waters III's indigenous pride plays a pivotal role in his incredible NBA journey, which continues with a great start to his Warriors tenure.
+5                                                                                      Leave it to Jim Harbaugh to call an audible when addressing his health.
+6                                                                                                                                                    [Removed]
+                                                                                                                                              url
+1                                                                                        https://www.gatesnotes.com/Digital-public-infrastructure
+2 https://www.cinemablend.com/streaming-news/nobody-wants-this-star-justine-lupe-clears-air-about-her-on-set-pregnancy-with-inspirational-message
+3                                                                                         https://www.digitaltrends.com/mobile/vuzix-400-upgrade/
+4 https://www.nbcsportsbayarea.com/nba/golden-state-warriors/lindy-waters-iii-indigenous-peoples-day-oklahoma-city-thunder/1793517/?partner=yahoo
+5          https://www.foxsports.com/stories/nfl/chargers-coach-jim-harbaugh-wearing-heart-monitor-taking-blood-thinner-after-irregular-heartbeat
+6                                                                                                                             https://removed.com
+                                                                                                                                                        urlToImage
+1 https://assets.gatesnotes.com/8a5ac0b3-6095-00af-c50a-89056fbe4642/a202fef2-c757-4168-9f81-4e03f032bb91/20240924-DPI-TGN-Assets-002b_e-wide-feature_1200x580.jpg
+2                                                                                             https://cdn.mos.cms.futurecdn.net/ZEvemiig5GWNg9ZXP2GjJD-1200-80.jpg
+3                   https://www.digitaltrends.com/wp-content/uploads/2023/01/Vuzix-AR-wearables-are-remarkably-thin-like-regular-glasses.jpg?resize=1200%2C630&amp;p=1
+4                                                                                       https://media.zenfs.com/en/csnbayarea.com/8e0fe7e7272c78025b28802b7b9a34bc
+5                                  https://a57.foxsports.com/statics.foxsports.com/www.foxsports.com/content/uploads/2024/10/1408/814/jim-harbaugh-h.jpg?ve=1&amp;tl=1
+6                                                                                                                                                             &lt;NA&gt;
+          publishedAt
+1 2024-10-15 00:00:00
+2 2024-10-15 00:05:00
+3 2024-10-15 00:10:08
+4 2024-10-15 00:26:48
+5 2024-10-15 00:34:14
+6 2024-10-15 00:38:59
+                                                                                                                                                                                                                   content
+1   Almost thirty years ago, I wrote a book called The Road Ahead, about the transformative potential of the internet and other new digital technologies. Back then, I envisioned a world where online paym… [+7900 chars]
+2   Things are changing in Hollywood, at least for expecting parents, and more importantly mothers. The most recent example was on the set of Netflix's, Nobody Wants This, arguably the best rom-com of th… [+3550 chars]
+3 Vuzix has upgraded its flagship M400 enterprise smart glasses with Android 13, offering businesses a more secure, efficient way to manage their wearable tech.\r\nThe update ensures that users benefit f… [+2411 chars]
+4 How Waters' indigenous pride fuels his incredible NBA journey originally appeared on NBC Sports Bay Area\r\nSAN FRANCISCO Though Lindy Waters III is undiscovered to much of America, hes a welcome disco… [+3782 chars]
+5 Leave it to Jim Harbaugh to call an audible when addressing his health.\r\nThe Los Angeles Chargers coach wasn't supposed to do his Monday news conference because he was undergoing medical testing afte… [+4162 chars]
+6                                                                                                                                                                                                                [Removed]
+   pub_diff
+1   NA secs
+2  300 secs
+3  308 secs
+4 1000 secs
+5  446 secs
+6  285 secs</code></pre>
+</div>
 </div>
 <p>Autoimmune diseases news data frame</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>autoimmune_news_mod <span class="ot">&lt;-</span> <span class="fu">news_date_modifications</span>(autoimmune_news)</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(autoimmune_news_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>autoimmune_news_mod <span class="ot">&lt;-</span> <span class="fu">news_date_modifications</span>(autoimmune_news)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(autoimmune_news_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  source.id            source.name
+1      &lt;NA&gt;          Investing.com
+2      &lt;NA&gt;      mindbodygreen.com
+3      &lt;NA&gt; Erickimphotography.com
+4      &lt;NA&gt;         ETF Daily News
+5      &lt;NA&gt;         ETF Daily News
+6      &lt;NA&gt;         ETF Daily News
+                                               author
+1                                       Investing.com
+2 https://www.mindbodygreen.com/wc/shilpa-ravella-m-d
+3                                            ERIC KIM
+4                                     MarketBeat News
+5                                     MarketBeat News
+6                                     MarketBeat News
+                                                                                                                                              title
+1 Moderna and Cenra Healthcare Enter Joint Agreement to Promote Moderna's mRNA Respiratory Vaccine Portfolio in Taiwan, Including COVID-19 Vaccines
+2                                                                5 Surprising Gut Health Facts That Everyone Should Know, From A Gastroenterologist
+3                                                                                       Grass-Fed vs. Grain-Fed Beef: Understanding the Differences
+4                                                             Monte Rosa Therapeutics, Inc. (NASDAQ:GLUE) Sees Significant Growth in Short Interest
+5                                                                              Akari Therapeutics (NASDAQ:AKTX) Coverage Initiated at StockNews.com
+6                                                             Celldex Therapeutics (NASDAQ:CLDX) Now Covered by Analysts at The Goldman Sachs Group
+                                                                                                                                                                                                                                                           description
+1                                                                                                                    Moderna and Cenra Healthcare Enter Joint Agreement to Promote Moderna's mRNA Respiratory Vaccine Portfolio in Taiwan, Including COVID-19 Vaccines
+2                                                                                                                                                                                                                                                  Bring on the fiber.
+3 When choosing between grass-fed and grain-fed beef, several factors come into play, including nutritional content, taste, environmental impact, animal welfare, and cost. Here’s a comprehensive comparison to help you make an informed decision. Definitions Nutr…
+4 Monte Rosa Therapeutics, Inc. (NASDAQ:GLUE – Get Free Report) was the recipient of a large growth in short interest during the month of September. As of September 15th, there was short interest totalling 3,270,000 shares, a growth of 6.9% from the August 31st…
+5 Analysts at StockNews.com assumed coverage on shares of Akari Therapeutics (NASDAQ:AKTX – Get Free Report) in a research report issued to clients and investors on Tuesday. The firm set a “sell” rating on the biopharmaceutical company’s stock. Akari Therapeuti…
+6 The Goldman Sachs Group assumed coverage on shares of Celldex Therapeutics (NASDAQ:CLDX – Free Report) in a research note released on Monday, Marketbeat.com reports. The firm issued a neutral rating and a $45.00 price target on the biopharmaceutical company’s…
+                                                                                                                                                                                                        url
+1 https://www.investing.com/news/press-releases/moderna-and-cenra-healthcare-enter-joint-agreement-to-promote-modernas-mrna-respiratory-vaccine-portfolio-in-taiwan-including-covid19-vaccines-93CH-3641785
+2                                                                                                                               https://www.mindbodygreen.com/articles/gut-health-tips-from-a-gastro-52170a
+3                                                                                                 https://erickimphotography.com/blog/2024/09/30/grass-fed-vs-grain-fed-beef-understanding-the-differences/
+4                                                                                 https://www.etfdailynews.com/2024/09/30/monte-rosa-therapeutics-inc-nasdaqglue-sees-significant-growth-in-short-interest/
+5                                                                                                https://www.etfdailynews.com/2024/10/01/akari-therapeutics-nasdaqaktx-coverage-initiated-at-stocknews-com/
+6                                                                               https://www.etfdailynews.com/2024/10/01/celldex-therapeutics-nasdaqcldx-now-covered-by-analysts-at-the-goldman-sachs-group/
+                                                                                                                                                                                 urlToImage
+1                                                                                                               https://i-invdn-com.investing.com/redesign/images/seo/investing_300X300.png
+2                                                                https://mindbodygreen-res.cloudinary.com/image/upload/c_fill,w_2000,h_1200,g_auto,fl_lossy,f_jpg/org/p4bk1jyi4kf2t58hy.jpg
+3                                                                                                                                                                                      &lt;NA&gt;
+4 https://www.americanbankingnews.com/wp-content/timthumb/timthumb.php?src=https://www.marketbeat.com/logos/monte-rosa-therapeutics-inc-logo-1200x675.png?v=20240522123817&amp;w=240&amp;h=240&amp;zc=2
+5      https://www.americanbankingnews.com/wp-content/timthumb/timthumb.php?src=https://www.marketbeat.com/logos/akari-therapeutics-plc-logo-1200x675.jpg?v=20230111070844&amp;w=240&amp;h=240&amp;zc=2
+6             https://www.americanbankingnews.com/wp-content/timthumb/timthumb.php?src=https://www.marketbeat.com/logos/celldex-therapeutics-inc-logo.png?v=20221129111334&amp;w=240&amp;h=240&amp;zc=2
+          publishedAt
+1 2024-10-01 00:12:04
+2 2024-10-01 00:35:00
+3 2024-10-01 00:39:26
+4 2024-10-01 01:45:36
+5 2024-10-01 06:18:52
+6 2024-10-01 07:18:58
+                                                                                                                                                                                                                 content
+1 CAMBRIDGE, MA and TAIPEI, TAIWAN / ACCESSWIRE / September 30, 2024 / Moderna , Inc. (Nasdaq:NASDAQ:MRNA) and Cenra Healthcare, the sales and marketing arm of Cenra Inc., today announced that the comp… [+5698 chars]
+2 By Shilpa Ravella, M.D.Shilpa Ravella, M.D. is a gastroenterologist and author. Her first book, A Silent Fire: The Story of Inflammation, Diet &amp;amp; Disease (W.W. Norton), was a best science pick by … [+4954 chars]
+3 When it comes to the health consequences of consuming grass-fed versus grain-fed beef, the differences largely stem from the nutritional content of the meat, which can impact various aspects of healt… [+9819 chars]
+4 Monte Rosa Therapeutics, Inc. (NASDAQ:GLUE – Get Free Report) was the recipient of a large growth in short interest during the month of September. As of September 15th, there was short interest total… [+5028 chars]
+5 Analysts at StockNews.com assumed coverage on shares of Akari Therapeutics (NASDAQ:AKTX – Get Free Report) in a research report issued to clients and investors on Tuesday. The firm set a “sell” ratin… [+1301 chars]
+6 The Goldman Sachs Group assumed coverage on shares of Celldex Therapeutics (NASDAQ:CLDX – Free Report) in a research note released on Monday, Marketbeat.com reports. The firm issued a neutral rating … [+4156 chars]
+    pub_diff
+1    NA secs
+2  1376 secs
+3   266 secs
+4  3970 secs
+5 16396 secs
+6  3606 secs</code></pre>
+</div>
 </div>
 </section>
 <section id="summaries" class="level3">
@@ -608,11 +855,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Have to pass 3 functions to 2 columns</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>health_news_mod <span class="sc">|&gt;</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(publishedAt, pub_diff) <span class="sc">|&gt;</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(\(x) <span class="fu">list</span>(<span class="st">"mean"</span> <span class="ot">=</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">"sd"</span> <span class="ot">=</span> <span class="fu">sd</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">"median"</span> <span class="ot">=</span> <span class="fu">median</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>health_news_mod <span class="sc">|&gt;</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(publishedAt, pub_diff) <span class="sc">|&gt;</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(\(x) <span class="fu">list</span>(<span class="st">"mean"</span> <span class="ot">=</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">"sd"</span> <span class="ot">=</span> <span class="fu">sd</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">"median"</span> <span class="ot">=</span> <span class="fu">median</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$publishedAt
+$publishedAt$mean
+[1] "2024-10-15 13:44:15 UTC"
+
+$publishedAt$sd
+[1] 20593.48
+
+$publishedAt$median
+[1] "2024-10-15 14:01:17 UTC"
+
+
+$pub_diff
+$pub_diff$mean
+Time difference of 171.7114 secs
+
+$pub_diff$sd
+[1] 217.5926
+
+$pub_diff$median
+Time difference of 86 secs</code></pre>
+</div>
 </div>
 
 
